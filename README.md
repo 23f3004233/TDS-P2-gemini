@@ -163,11 +163,13 @@ invalid json content
 ├── gemini_wrapper.py       # Gemini API integration
 ├── browser_handler.py      # Playwright headless browser
 ├── data_processor.py       # Data sourcing & processing
+├── config.py               # Configuration files
 ├── requirements.txt        # Python dependencies
 ├── Dockerfile             # Container configuration
 ├── railway.json           # Railway deployment config
 ├── .env.example           # Environment variables template
 ├── .gitignore            # Git ignore rules
+├── LICENSE               # MIT License
 └── README.md             # This file
 ```
 
