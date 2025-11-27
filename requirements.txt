@@ -20,3 +20,4 @@ pydub==0.25.1
 moviepy==1.0.3
 python-magic==0.4.27
 filetype==1.2.0
+email-validator==2.1.1
