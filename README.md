@@ -1,294 +1,199 @@
-# LLM Analysis Quiz Solver
+# TDS LLM Quiz Solver
 
-A robust, production-ready application that autonomously solves data analysis quizzes using LLMs and headless browser automation.
+Automated quiz solver using Claude Sonnet 4.5 via Puter.js for the TDS LLM Analysis Project.
 
-## 🏗️ Architecture
+## Features
 
-This application implements a sophisticated pipeline that:
+- ✅ Automatic quiz solving with Claude Sonnet 4.5
+- ✅ Handles multiple quiz types (25+ types)
+- ✅ Supports various file formats (CSV, Excel, PDF, Images, Audio, Video)
+- ✅ Browser automation with Puppeteer
+- ✅ Free unlimited LLM access via Puter.js
+- ✅ Automatic retry logic
+- ✅ Chain quiz handling
 
-1. **Receives quiz tasks** via a FastAPI endpoint
-2. **Renders JavaScript-driven quiz pages** using Playwright headless browser
-3. **Analyzes tasks** using Gemini 2.0 Flash Exp LLM
-4. **Sources and processes data** from various formats (PDFs, APIs, websites)
-5. **Solves complex data analysis problems** including visualization
-6. **Submits answers** and iterates through quiz chains within a 3-minute time limit
+## Prerequisites
 
-## 🎯 Key Features
+- Node.js >= 18.0.0
+- npm or yarn
 
-- **Asynchronous Processing**: Background task execution ensures immediate HTTP 200 response
-- **Intelligent Task Analysis**: LLM-powered task decomposition and solution planning
-- **Comprehensive Media Support**: 
-  - 📄 **PDFs** - Text extraction from all pages
-  - 🖼️ **Images** - Vision analysis with Gemini (OCR, object detection)
-  - 🎵 **Audio** - Metadata extraction (duration, format, channels)
-  - 🎬 **Video** - Metadata and first-frame analysis
-  - 📊 **CSV/Excel** - Data parsing and analysis
-  - 📋 **JSON** - Structured data extraction
-  - 📝 **Text files** - Content analysis
-  - 🌐 **HTML** - Web scraping with JavaScript rendering
-  - 🔌 **APIs** - REST endpoint integration
-- **Visualization Support**: Automatic chart generation with matplotlib/seaborn
-- **Retry Logic**: Smart re-submission with error analysis
-- **Time Management**: 3-minute deadline enforcement
-- **Production-Ready**: Comprehensive error handling and logging
+## Installation
 
-## 📋 Prerequisites
-
-- Python 3.11+
-- Railway account (for deployment)
-- Gemini API key
-- Git & GitHub account
-
-## 🚀 Setup Instructions
-
-### 1. Clone and Setup Repository
-
+1. Clone the repository:
 ```bash
-# Clone your repository
 git clone <your-repo-url>
-cd <your-repo-name>
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install Playwright browsers
-playwright install chromium
+cd tds-llm-quiz-solver
 ```
 
-### 2. Environment Configuration
-
-Create a `.env` file in the root directory:
-
+2. Install dependencies:
 ```bash
-SECRET_STRING=your_unique_secret_string
-GEMINI_API_KEY=your_gemini_api_key
-EMAIL=your_email@example.com
+npm install
 ```
 
-**Important**: Never commit the `.env` file to Git. It's already in `.gitignore`.
-
-### 3. Local Testing
-
+3. Configure environment variables:
 ```bash
-# Run the server locally
-uvicorn main:app --reload --port 8000
+cp .env.example .env
+```
 
-# Test with ThunderClient or curl
-curl -X POST http://localhost:8000/quiz \
+Edit `.env` and set your values:
+```env
+SECRET=your-secret-from-google-form
+EMAIL=your-email@iitm.ac.in
+PORT=3000
+```
+
+## Local Development
+
+1. Start the server:
+```bash
+npm start
+```
+
+2. Test with Thunder Client or curl:
+```bash
+curl -X POST http://localhost:3000/solve \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "your_email@example.com",
-    "secret": "your_secret",
+    "email": "your-email@iitm.ac.in",
+    "secret": "your-secret",
     "url": "https://tds-llm-analysis.s-anand.net/demo"
   }'
 ```
 
-### 4. Railway Deployment
+## Deployment to Railway
 
-#### Step 1: Push to GitHub
+1. Create a new project on Railway
+
+2. Connect your GitHub repository
+
+3. Add environment variables in Railway dashboard:
+   - `SECRET`: Your secret from the Google Form
+   - `EMAIL`: Your email
+   - `NODE_ENV`: production
+
+4. Railway will automatically:
+   - Detect Node.js
+   - Run `npm install`
+   - Start with `npm start`
+
+5. Get your deployment URL from Railway (e.g., `https://your-app.railway.app`)
+
+6. Update your Google Form with:
+   - API Endpoint: `https://your-app.railway.app/solve`
+   - GitHub Repo: Your repository URL
+
+## Testing
+
+Test your endpoint before submission:
 
 ```bash
-git add .
-git commit -m "Initial commit: LLM Quiz Solver"
-git push origin main
+curl -X POST https://your-app.railway.app/solve \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "your-email@iitm.ac.in",
+    "secret": "your-secret",
+    "url": "https://tds-llm-analysis.s-anand.net/demo"
+  }'
 ```
 
-#### Step 2: Deploy to Railway
-
-1. Go to [Railway](https://railway.app/)
-2. Click "New Project" → "Deploy from GitHub repo"
-3. Select your repository
-4. Railway will auto-detect the Dockerfile
-
-#### Step 3: Configure Environment Variables
-
-In Railway dashboard:
-1. Go to your project → Variables
-2. Add three variables:
-   - `SECRET_STRING`: Your secret string
-   - `GEMINI_API_KEY`: Your Gemini API key
-   - `EMAIL`: Your email address
-
-#### Step 4: Get Your Public URL
-
-1. Go to Settings → Networking
-2. Click "Generate Domain"
-3. Copy your HTTPS URL (e.g., `https://your-app.railway.app`)
-
-### 5. Submit to Google Form
-
-Fill out the Google Form with:
-- Your email address
-- Your secret string
-- Your Railway HTTPS endpoint URL + `/quiz` (e.g., `https://your-app.railway.app/quiz`)
-- Your GitHub repository URL
-
-## 🧪 Testing
-
-### Local Testing with Demo Endpoint
-
-```json
-{
-  "email": "your_email@example.com",
-  "secret": "your_secret",
-  "url": "https://tds-llm-analysis.s-anand.net/demo"
-}
-```
-
-### Test Invalid Secret (should return 403)
-
-```json
-{
-  "email": "your_email@example.com",
-  "secret": "wrong_secret",
-  "url": "https://example.com/quiz"
-}
-```
-
-### Test Invalid JSON (should return 400)
+## Project Structure
 
 ```
-invalid json content
+project/
+├── server.js                 # Express server
+├── quiz-solver.js           # Main quiz solving logic
+├── browser-handler.js       # Puppeteer automation
+├── llm-client.js           # Puter.js Claude integration
+├── processors/
+│   ├── csv-processor.js    # CSV/Excel processing
+│   ├── pdf-processor.js    # PDF processing
+│   ├── image-processor.js  # Image processing
+│   ├── audio-processor.js  # Audio processing
+│   └── video-processor.js  # Video processing
+├── utils/
+│   ├── file-downloader.js  # File download utilities
+│   ├── data-transformer.js # Data transformation
+│   └── validator.js        # Request validation
+├── package.json
+├── .env
+└── README.md
 ```
 
-## 📁 Project Structure
+## Supported Quiz Types
 
-```
-.
-├── main.py                 # FastAPI application & orchestration
-├── gemini_wrapper.py       # Gemini API integration
-├── browser_handler.py      # Playwright headless browser
-├── data_processor.py       # Data sourcing & processing
-├── config.py               # Configuration files
-├── requirements.txt        # Python dependencies
-├── Dockerfile             # Container configuration
-├── railway.json           # Railway deployment config
-├── .env.example           # Environment variables template
-├── .gitignore            # Git ignore rules
-├── LICENSE               # MIT License
-└── README.md             # This file
-```
+The system handles all 25+ quiz types including:
+- Entry point validation
+- File downloads (CSV, Excel, PDF, Images)
+- Data analysis and aggregation
+- Web scraping and DOM manipulation
+- Custom headers and API calls
+- Audio/video processing
+- Chart generation
+- Machine learning tasks
+- RAG and embedding tasks
 
-## 🔧 Technical Implementation
+## How It Works
 
-### Core Components
+1. **Receive POST request** with email, secret, and quiz URL
+2. **Validate** secret against environment variable
+3. **Visit quiz page** using Puppeteer (headless browser)
+4. **Extract** question, content, and file links
+5. **Download and process** any files (CSV, PDF, images, etc.)
+6. **Analyze** using Claude Sonnet 4.5 via Puter.js
+7. **Generate answer** based on analysis
+8. **Submit answer** to the specified endpoint
+9. **Handle response** and move to next quiz if available
+10. **Repeat** until quiz chain completes or timeout
 
-#### 1. **GeminiWrapper** (`gemini_wrapper.py`)
-- Task analysis and decomposition
-- Data processing and solution generation
-- Answer format parsing
-- Visualization code generation
+## Time Management
 
-#### 2. **BrowserHandler** (`browser_handler.py`)
-- Playwright-based headless browser
-- JavaScript rendering
-- DOM extraction
-- File downloads
+- 3-minute window from initial POST
+- Automatic timeout tracking
+- Quick fail-fast on errors
+- Optimized LLM prompts
 
-#### 3. **DataProcessor** (`data_processor.py`)
-- PDF text extraction
-- API data fetching
-- CSV/JSON parsing
-- Image base64 encoding
-- Visualization execution
+## Troubleshooting
 
-#### 4. **QuizSolver** (`main.py`)
-- Main orchestration logic
-- Quiz chain navigation
-- Time management (3-minute limit)
-- Retry logic with error analysis
+### Puppeteer Issues on Railway
+If Puppeteer fails to launch, Railway automatically handles Chrome dependencies. The configuration in `browser-handler.js` includes all necessary flags.
 
-### Data Flow
+### LLM Timeout
+If Claude takes too long, the system will retry up to 3 times with exponential backoff.
 
-```
-POST /quiz → Secret Verification → HTTP 200 Response
-                                          ↓
-                            Background Task Starts
-                                          ↓
-                              Fetch Quiz Page (Playwright)
-                                          ↓
-                             Analyze Task (Gemini)
-                                          ↓
-                           Fetch Additional Data (if needed)
-                                          ↓
-                            Solve Task (Gemini)
-                                          ↓
-                           Submit Answer (HTTP POST)
-                                          ↓
-                    Correct? → Yes → Next URL? → Continue Loop
-                       ↓ No
-                    Retry with Error Analysis (max 3 attempts)
-```
+### File Processing Errors
+The system includes fallback mechanisms for each file type. Check logs for specific errors.
 
-## 🎓 Design Choices & Rationale
+### Secret Validation Fails
+Ensure your `.env` file has the correct secret matching your Google Form submission.
 
-### 1. **FastAPI with Background Tasks**
-- **Why**: Immediate HTTP 200 response required while processing continues
-- **Benefit**: Non-blocking, handles 3-minute deadline without client timeout
+## Logs
 
-### 2. **Playwright over Selenium**
-- **Why**: Modern API, better async support, easier Docker deployment
-- **Benefit**: More reliable JavaScript rendering, built-in wait mechanisms
+All operations are logged with timestamps:
+- `[MASTER]` - Quiz chain orchestration
+- `[SOLVER]` - Individual quiz solving
+- `[BROWSER]` - Puppeteer operations
+- `[LLM]` - Claude API calls
+- `[CSV/PDF/IMAGE/etc]` - File processing
+- `[DOWNLOAD]` - File downloads
+- `[SUBMIT]` - Answer submissions
 
-### 3. **Gemini 2.0 Flash Exp**
-- **Why**: Fast inference, good balance of speed and accuracy
-- **Benefit**: Fits within the 3-minute time constraint
+## Environment Variables
 
-### 4. **Modular Architecture**
-- **Why**: Separation of concerns (browser, LLM, data processing)
-- **Benefit**: Easier testing, debugging, and maintenance
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `SECRET` | Yes | - | Your secret from Google Form |
+| `EMAIL` | No | - | Your email (optional) |
+| `PORT` | No | 3000 | Server port |
+| `NODE_ENV` | No | development | Environment |
 
-### 5. **No Hardcoded URLs**
-- **Why**: Requirement specification
-- **Benefit**: Dynamic submission URL extraction from quiz content
+## License
 
-### 6. **Comprehensive Error Handling**
-- **Why**: Real-world reliability
-- **Benefit**: Graceful degradation, informative logging
+MIT
 
-## 🐛 Troubleshooting
+## Support
 
-### Playwright Issues
-```bash
-# If browser installation fails
-playwright install --with-deps chromium
-```
-
-### Railway Deployment Issues
-- Ensure Dockerfile is in root directory
-- Check Railway logs: Project → Deployments → View Logs
-- Verify environment variables are set
-
-### API Response Issues
-- Check logs for detailed error messages
-- Verify Gemini API key is valid and has quota
-- Ensure quiz URL is accessible
-
-## 📊 Expected Performance
-
-- **Response Time**: < 100ms for initial HTTP 200
-- **Quiz Solve Time**: 10-60 seconds per quiz (depending on complexity)
-- **Success Rate**: High (with retry logic)
-- **Time Compliance**: Always within 3-minute window
-
-## 🔒 Security Considerations
-
-- Environment variables for sensitive data
-- Secret verification on every request
-- No exposed API keys in code
-- HTTPS-only deployment
-
-## 📝 License
-
-MIT License - See LICENSE file for details
-
-## 👤 Author
-
-Devodita Chakravarty, 
-23f3004233@ds.study.iitm.ac.in
+For issues or questions, check the logs first. Most errors are logged with descriptive messages.
 
 ---
+
+**Author**: Devodita Chakravarty
