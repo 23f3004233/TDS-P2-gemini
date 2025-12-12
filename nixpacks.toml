@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["python3", "cairo", "pango", "libjpeg", "giflib", "librsvg", "pixman"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[start]
+cmd = "npm start"
